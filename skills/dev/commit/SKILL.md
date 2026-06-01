@@ -25,6 +25,8 @@ Gather or infer:
 4. The commit message — use the user's wording if given, otherwise infer it from the diff.
 5. Whether to push afterward (default: yes, to `origin`).
 
+Treat push as the baseline behavior when presenting options. If offering multiple commit-grouping strategies, keep push enabled by default for each strategy unless the user explicitly asks for "no push" or equivalent.
+
 ## Workflow
 
 ### 1. Inspect the working tree
@@ -38,34 +40,57 @@ Gather or infer:
 
 - Build on the groups `changes` already identified.
 - If all changes serve one cohesive purpose, plan a single commit.
+- If repository policy defines artifact-level commit granularity (for example,
+  one artifact per commit), default to one commit per changed artifact. Only
+  bundle multiple artifacts when they are lock-step coupled (direct
+  cross-reference, shared contract/schema change, or no safe intermediate
+  state).
 - If unrelated changes are mixed together, propose splitting them into logical commits and stage each subset separately (pathspecs or `git add -p`).
 - Do not sweep in the unrelated or incidental edits `changes` flagged. Surface them to the user instead.
+- Before staging anything, present the proposed commit plan to the user:
+  - Commit count and grouping boundaries.
+  - Exact files/hunks per commit.
+  - Proposed commit subject(s).
+  - Push behavior (default: push to `origin` after commit unless explicitly opted out).
+- If the user has not explicitly approved the plan, stop and ask for confirmation before proceeding.
+- If the plan bundles multiple policy-scoped artifacts, include the lock-step
+  coupling reason explicitly and ask for confirmation before staging.
 
-### 3. Stage deliberately
+### 3. Re-validate right before staging
+
+1. Re-run `git status --porcelain` and refresh `git diff` immediately before staging.
+2. If new or unrelated changes appeared after the initial review, pause and ask how to handle them (include, split, or leave out) before continuing.
+3. Update the commit plan if the working tree changed, then re-confirm with the user.
+
+### 4. Stage deliberately
 
 1. Stage exactly the files or hunks for each planned commit.
 2. Avoid a blind `git add -A` / `git add .` without reviewing what it includes.
 3. Re-check `git diff --staged` before committing.
 
-### 4. Write the message
+### 5. Write the message
 
 - Follow the convention observed in `git log` and any rule in `CLAUDE.md` / `AGENTS.md` (e.g. Conventional Commits, required trailers).
 - Absent a clear convention: a concise imperative subject (~50 chars), plus a body explaining *why* when the change is non-trivial.
 - Describe the change itself, not the act of committing.
 
-### 5. Run pre-commit hooks
+### 6. Run pre-commit hooks
 
 - Let hooks run. If a hook reformats files, re-stage the result and proceed.
 - If a hook fails, read its output, fix the underlying cause, and retry.
 - Do not bypass hooks with `--no-verify` unless the user explicitly asks.
 
-### 6. Commit
+### 7. Commit
 
 - Create each planned commit. For multiple commits, repeat staging + message per group.
+
+### 8. Push
+
 - Push to `origin` by default after committing.
 - If the branch is missing on `origin`, create it on first push and set upstream (for example, `git push -u origin <branch>`).
+- Only skip push to `origin` if requested by user.
 
-### 7. Report
+### 9. Report
 
 - Show the commit(s) created. Push to `origin` unless the user requested otherwise.
 
