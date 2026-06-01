@@ -1,79 +1,120 @@
 # AGENTS.md
 
-Guidance for AI agents working **on** this repository. This repo is a collection of agent skills — small, self-contained workflows that teach a coding agent how to run one task reliably, end-to-end. You are editing the skills themselves, not using them.
+Guidance for AI agents working **on** this repository.
 
 ## What this repo is
 
-- Each skill lives in its own directory containing a single `SKILL.md`.
-- Skills are grouped into category directories (for example, `pull-requests/`).
-- Skills are **installed by symlink**, not copy (see `INSTALL.md`). Editing a `SKILL.md` here updates it in every harness at once.
-- `README.md` is the human-facing catalog. `INSTALL.md` is the one-time setup that links every skill into each installed agent harness.
+A collection of reusable **agentic tools**, shared across machines and projects.
+Two kinds of tool live here today:
+
+- **Skills** — each lives in its own directory containing a single `SKILL.md`,
+  grouped into category directories under `skills/`. Skills follow the
+  agentskills.io standard and are portable across harnesses.
+- **Agent profiles** — Claude Code subagents, single `.md` files under
+  `agents/`. These are Claude-Code-specific.
+
+Tools are **installed by symlink, not copy** (see `INSTALL.md`), so editing a
+tool here updates it in every harness at once. Skills install into every
+detected harness; agent profiles install only into harnesses that support them
+(Claude today). `README.md` is the human-facing catalog. `INSTALL.md` is the
+one-time setup that links every tool into each installed harness.
 
 ## Repository layout
 
 ```
-<category>/<skill-name>/SKILL.md   # one skill
-README.md                          # catalog of all skills
-INSTALL.md                         # symlink-install prompt + script
-AGENTS.md                          # this file
+skills/<category>/<skill-name>/SKILL.md   # one skill
+agents/[<group>/]<agent-name>.md          # one agent profile
+README.md                                 # catalog of all tools
+INSTALL.md                                # symlink-install prompt + script
+AGENTS.md                                 # this file
 ```
 
-The repo root must **not** contain a `SKILL.md`; the installer treats every directory with a `SKILL.md` (except the root) as one skill.
+Tools are keyed by their `name:` frontmatter, not their path — the `skills/`
+category folders and any `agents/` grouping folders are purely organizational
+and invisible to the harness.
+
+- `skills/` must **not** contain a `SKILL.md` at its own root; the installer
+  treats every directory with a `SKILL.md` as one skill.
+- Don't mix the two types: skill `SKILL.md` files go under `skills/`, agent
+  `.md` files under `agents/`. Discovery is scoped per type root.
 
 ## SKILL.md conventions
 
 Every skill follows the same shape. Match it exactly when adding or editing one.
 
-### Frontmatter
-
-YAML frontmatter with two keys:
+**Frontmatter** — YAML with two keys:
 
 ```yaml
----
 name: skill-name
 description: One paragraph describing what the skill does, the concrete steps it covers, and a "Use when ..." trigger sentence.
----
 ```
 
-- `name` is lowercase, hyphenated, and **must** match the skill's directory name. The installer symlinks the skill as `<skills-dir>/<name>`, so a mismatch creates a confusing link.
-- `description` is written in the third person, names the major steps the skill performs, and ends with a sentence starting with "Use when ..." so a harness can decide when to invoke it.
+- `name` is lowercase, hyphenated, and **must** match the skill's directory
+  name. The installer symlinks `<skills-dir>/<name>`, so a mismatch creates a
+  confusing link.
+- `description` is third person, names the major steps the skill performs, and
+  ends with a sentence starting with "Use when ...".
 
-### Body structure
+**Body** — these sections, in order:
 
-After the frontmatter, use a `# Title` heading, then these sections (omit ones that genuinely don't apply, but keep the order):
+1. `# Title`
+2. `## Core Contract` — when to use the skill, default scope, external tools.
+   `CLAUDE.md` / `AGENTS.md` in the target repo are the source of truth and
+   override the skill on conflict.
+3. `## Required Inputs` — what to gather or infer before acting.
+4. `## Workflow` — numbered steps, with explicit stop-and-ask gates.
+5. `## <Platform> Implementation Notes` — concrete commands.
+6. `## Safety Rules` — hard constraints ("Never ...").
+7. `## Output Style` — what to report when done.
 
-1. `## Core Contract` — when to use the skill, the default scope (usually end-to-end), and which external tools it defaults to. State that `CLAUDE.md` / `AGENTS.md` in the target repo are the source of truth and override the skill on conflict.
-2. `## Required Inputs` — what to gather or infer before acting.
-3. `## Workflow` — numbered `###` steps, each with concrete, ordered actions. This is the heart of the skill.
-4. Implementation notes (for example, `## GitHub Implementation Notes`) — concrete commands and recommended sequences.
-5. `## Safety Rules` — a "Never ..." list of hard constraints.
-6. `## Output Style` — what to report when finishing.
+## Agent profile conventions
 
-### Writing style
+An agent profile is a Claude Code subagent: a single `.md` file whose body is the
+subagent's system prompt.
 
-- Be imperative and specific. Prefer numbered steps and short directive sentences over prose.
-- Tell the agent when to **stop and ask the user** (ambiguity, multiple matches, product/architecture decisions, risky changes).
-- Make skills end-to-end by default but easy to scope down on request.
-- Keep skills self-contained: a skill should not depend on another skill being present.
-- Don't hardcode one harness's assumptions; skills should work across Claude Code, Codex, Cursor, and the other harnesses in `INSTALL.md`.
+**Location** — `agents/<name>.md`, optionally grouped in subfolders
+(`agents/review/code-reviewer.md`). The path is cosmetic; Claude identifies the
+agent by its `name:` frontmatter.
 
-## Adding a new skill
+**Frontmatter** — YAML:
 
-1. Create `<category>/<skill-name>/SKILL.md` (create the category directory if needed). Reuse an existing category when it fits.
-2. Write the frontmatter and body following the conventions above. Read a sibling skill (for example, `pull-requests/pr-ci/SKILL.md`) and mirror its structure.
-3. Add a bullet to the matching section of `README.md` linking the new skill and summarizing it in one line.
-4. No installer change is needed — `INSTALL.md`'s script discovers any directory with a `SKILL.md` automatically. Re-running the install prompt links the new skill everywhere.
+```yaml
+name: agent-name          # required; lowercase-hyphenated; unique repo-wide
+description: Third-person summary of what the agent does, ending with a "Delegate when ..." trigger so Claude knows when to route to it.   # required
+tools: Read, Grep, Glob, Bash   # optional; least-privilege allowlist
+model: inherit                  # optional; inherit | sonnet | haiku | opus
+```
 
-## Editing or renaming a skill
+- `name` must be unique across the whole repo (it becomes the install link
+  `<agents-dir>/<name>.md`) and should match the filename for human sanity.
+- Restrict `tools` to the least privilege the role needs; omit to inherit all.
 
-- When editing a skill, preserve its section structure and tone.
-- Renaming a skill means renaming **both** the directory and the `name:` frontmatter together, then updating `README.md`. Existing symlinks point at the old name, so the install step must be re-run and stale links cleaned up.
-- Keep `README.md` in sync whenever a skill's purpose, name, or path changes.
+**Body** — the markdown body **is the system prompt**. Write focused, imperative
+instructions for one role. It must be self-contained: a subagent receives only
+this body plus the environment, not the full Claude Code system prompt. Mirror
+the skills' "stop and ask the user" guidance and the
+"CLAUDE.md/AGENTS.md in the target repo override this" clause.
+
+## Adding a new tool
+
+- **New skill:** add `skills/<category>/<name>/SKILL.md` following the
+  conventions above; mirror an existing skill such as
+  `skills/pull-requests/pr-ci/SKILL.md`.
+- **New agent:** add `agents/<name>.md`; mirror `agents/code-reviewer.md`.
+
+No installer change is needed for a new skill or agent of an already-supported
+type — the script discovers it. Re-run `INSTALL.md` to link it. Renaming a tool
+means renaming the file/directory **and** its `name:` together, then re-running
+install (it repoints) and removing any stale links.
 
 ## Things to avoid
 
-- Don't add a `SKILL.md` at the repo root.
-- Don't let `name:` drift from the directory name.
-- Don't copy a skill into a harness directory; the install flow symlinks. Don't commit harness-specific or absolute-path artifacts into the repo.
+- Don't add a `SKILL.md` at the `skills/` root, or place agent `.md` files under
+  `skills/` (or vice-versa) — it breaks type-scoped discovery.
+- Don't let a tool's `name:` drift from its file/directory name.
+- Don't copy a tool into a harness directory; the install flow symlinks.
+- Don't commit harness-specific or absolute-path artifacts into the repo.
 - Don't create new top-level docs or markdown files unless asked.
-- Don't break the data-driven install script in `INSTALL.md` — extend the harness table rather than special-casing logic.
+- Don't break the data-driven install script in `INSTALL.md` — to support a new
+  harness or artifact type, extend the harness table (add a row or a `type:dir`
+  pair) rather than special-casing logic.
