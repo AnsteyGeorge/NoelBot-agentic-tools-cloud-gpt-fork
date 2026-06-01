@@ -11,7 +11,7 @@ Use this skill when the user wants a read-only summary of their current working-
 
 Always inspect the actual diff. Read the current branch's history to understand the intended purpose of the work, then judge each change against that intent.
 
-Keep `CLAUDE.md` and `AGENTS.md` as mandatory policy sources. If this skill conflicts with them, follow those files.
+If `CLAUDE.md` or `AGENTS.md` exists in the target repository, treat them as policy sources. If this skill conflicts with them, follow those files.
 
 This skill is **read-only**. It does not stage, commit, push, discard, or otherwise modify anything. When the user is ready to commit, hand off to the `commit` skill.
 
@@ -30,8 +30,13 @@ Gather or infer:
 
 1. Run `git status --porcelain` to enumerate staged, unstaged, and untracked files.
 2. Run `git diff` (unstaged) and `git diff --staged` to see the actual content.
-3. Note untracked files separately — they are part of the change set but invisible to `git diff`.
-4. If the working tree is clean, report that there is nothing to summarize and stop.
+3. For each untracked file, inspect its content instead of only listing its path.
+4. For each untracked file, decide whether it is:
+   - a **relocation/rename-style move** (often paired with a deleted tracked file of the same or near-identical content),
+   - a **net-new addition**, or
+   - a **follow-on edit** to an already moved/copied artifact.
+5. Mark whether untracked items are independent changes or part of the same unit of work; do not assume one bucket just because all are untracked.
+6. If the working tree is clean, report that there is nothing to summarize and stop.
 
 ### 2. Establish branch context
 
@@ -43,6 +48,12 @@ Gather or infer:
 
 - Cluster files and hunks by the unit of work they serve (feature, fix, refactor, test, config, docs), not by directory.
 - A single file may contribute hunks to more than one group; split at the hunk level when that is clearer.
+- Untracked files must be grouped by intent and provenance (move vs net-new), not as a single "untracked" group.
+- If repository policy defines artifact-level commit granularity (for example,
+  one artifact per commit), default to treating each changed artifact as its own
+  independent group. Mark groups as lock-step coupled only when there is clear
+  coupling (direct cross-reference, shared contract/schema change, or a broken
+  intermediate state if shipped separately).
 - Name each group by its purpose, list the files/hunks in it, and describe what it does in one or two sentences.
 
 ### 4. Flag what is unrelated or problematic
@@ -58,12 +69,13 @@ For each, say *why* it stands out and suggest whether it belongs in this change,
 
 ### 5. Report
 
-Present the grouped summary followed by the flagged items. Offer the `commit` skill as the next step if the user wants to proceed.
+Present the grouped summary followed by the flagged items. Offer an appropriate next step if the user wants to proceed toward committing.
 
 ## Implementation Notes
 
 - Useful commands: `git status --porcelain`, `git diff`, `git diff --staged`, `git diff --stat`, `git log --oneline <base>..HEAD`, `git diff <base>...HEAD` for the full branch delta.
-- Untracked files do not appear in `git diff`; read them directly to judge their content.
+- Untracked files do not appear in `git diff`; read them directly to judge their content and purpose.
+- To identify relocation-like changes, compare untracked files against deleted/renamed tracked files (path, filename, and substantive content similarity), then report confidence as explicit reasoning.
 - Detect the base branch from the repo default (`git remote show origin`, or `gh repo view --json defaultBranchRef`) or a `develop` convention.
 - For a large change set, lead with `git diff --stat` to scope groups before reading full hunks.
 
@@ -80,5 +92,12 @@ When finishing, report:
 
 1. The branch and its base, plus the one-line purpose you inferred.
 2. The logical groups — each with a name, its files/hunks, and what it does.
-3. Flagged items — unrelated, incidental, risky, or inconsistent — with `file:line` and why.
-4. A short bottom line: does the change set look cohesive, or does it need splitting before commit.
+3. For changed artifacts covered by repository commit policy, an explicit commit
+   recommendation (`separate commit` vs `lock-step bundle`) with the coupling
+   reason.
+4. For untracked files, an explicit classification (`relocation` vs `net-new`
+   vs `follow-on`) and whether each is independent or coupled.
+5. Flagged items — unrelated, incidental, risky, or inconsistent — with
+   `file:line` and why.
+6. A short bottom line: does the change set look cohesive, or does it need
+   splitting before commit.
