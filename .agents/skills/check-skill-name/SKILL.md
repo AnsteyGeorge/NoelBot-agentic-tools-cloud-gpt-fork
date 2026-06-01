@@ -9,7 +9,7 @@ description: Check whether a proposed skill name collides with a reserved built-
 
 Use this skill to validate a proposed skill or slash-command name *before* it is created, so it never shadows — or gets shadowed by — a built-in command, bundled skill, or another tool's skill once installed across harnesses.
 
-Names matter because the installer (`INSTALL.md`) symlinks every skill into `~/.claude/skills`, `~/.codex/skills`, `~/.cursor/skills`, and others by its `name:` frontmatter. A name that matches a harness built-in (e.g. `clear`, `review`, `model`) is invoked with `/name`, so a collision is shadowed or ambiguous. The job here is to catch that collision early.
+Names matter because global skills from this repo are symlinked into harness skill directories (for example `~/.claude/skills`, `~/.codex/skills`, `~/.cursor/skills`) and repo-local authoring skills are loaded from `.agents/skills` (with `.claude` pointing at `.agents`). A name that matches a harness built-in (e.g. `clear`, `review`, `model`) is invoked with `/name`, so a collision is shadowed or ambiguous. The job here is to catch that collision early.
 
 The reserved-name list lives next to this file in `known-names.json`. It is the source of truth for the check; keep it current with the update mode below. This skill **reads and reports** — its only write is to `known-names.json` during an explicit update.
 
@@ -27,7 +27,7 @@ Keep `CLAUDE.md` / `AGENTS.md` in the repo authoritative; if they define naming 
 
 1. **Normalize** the candidate: lowercase, trim, strip a leading `/`, and reduce any path to its basename. Note if it violates the naming rule (lowercase, hyphenated, no spaces/underscores) — that is its own kind of "bad name" worth flagging.
 2. **Load reserved names** from `known-names.json` (the `names` map, grouped by source) and note the list's `updated` date.
-3. **Load in-repo names**: collect the `name:` frontmatter of every `skills/**/SKILL.md` and `agents/**/*.md` in this repo (see Implementation Notes for the command).
+3. **Load in-repo names**: collect the `name:` frontmatter of every `skills/**/SKILL.md`, `.agents/skills/**/SKILL.md`, and `agents/**/*.md` in this repo (see Implementation Notes for the command).
 4. **Compare**:
    - **Exact match** against any reserved or in-repo name → **conflict** (hard block). Report which source(s) own it.
    - **Near match** (differs only by hyphen/underscore/pluralization, or is a known alias such as `bg`↔`background`, `tp`↔`teleport`, `proactive`↔`loop`) → **risky**; explain the ambiguity.
@@ -51,7 +51,7 @@ To add a new tool to track, append a `{id, label, kind, url}` entry to `sources`
 
 - Prefer one pass with `rg` over multi-process `find|xargs|awk` pipelines. Collect in-repo names from frontmatter with:
   ```bash
-  rg -n --no-heading '^name:\s*' skills/**/SKILL.md agents/**/*.md \
+  rg -n --no-heading '^name:\s*' skills/**/SKILL.md .agents/skills/**/SKILL.md agents/**/*.md \
   | sed -E 's/.*name:\s*//' | tr -d '[:space:]' | sort -u
   ```
   This mirrors how `INSTALL.md` derives link names, so it catches the names that would collide on install while using fewer subprocesses.

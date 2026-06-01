@@ -21,6 +21,7 @@ Everyday local version-control workflows — no PR or `gh` required.
 - **[commit](skills/dev/commit/SKILL.md)** — Turn the current working-tree changes into well-formed commit(s): review the diff, group related changes, write a message in the repo's convention, run pre-commit hooks. Does not push unless asked.
 - **[rebase](skills/dev/rebase/SKILL.md)** — Rebase the current branch onto the latest base (`main` or `develop`): fetch, rebase, hand off to `conflicts` automatically on conflict, then `--force-with-lease`. The PR-agnostic sibling of `pr-rebase`.
 - **[conflicts](skills/dev/conflicts/SKILL.md)** — Resolve an in-progress merge/rebase/cherry-pick/revert conflict state using branch intent, then continue the operation to completion. Auto-triggered by `rebase`.
+- **[speclist](skills/dev/speclist/SKILL.md)** — Turn a report (analysis, findings, review notes, postmortem, discovery write-up) into an execution-ready implementation-spec checklist: extract requirements, sequence work, surface blockers, and define validation and rollout checks.
 
 ### Pull Requests
 
@@ -40,9 +41,14 @@ the source of truth.
 - **[deep-review](skills/code-quality/deep-review/SKILL.md)** — An extremely strict maintainability review focused on abstraction quality, giant files, and spaghetti-condition growth, pushing for ambitious "code judo" restructurings over local cleanups. Manually invoked (`disable-model-invocation`). Complements the bug-hunting `code-reviewer` agent.
 - **[dry](skills/code-quality/dry/SKILL.md)** — Read-only hunt for code duplication, DRY violations, and simplification opportunities over a chosen scope, ranking findings and proposing concrete consolidations — including new small reusable files. Distinguishes true duplication from incidental similarity that should stay separate. Hand off to `simplify` to apply.
 
-### Skill authoring (`_skills`)
+### Skill authoring (repo-local)
 
-- **[check-skill-name](skills/_skills/check-skill-name/SKILL.md)** — Check a proposed skill name against reserved built-in commands and bundled skills from Claude Code, Codex, and Cursor (plus names already in this repo), and report CLEAR / CONFLICT / RISKY with non-conflicting alternatives. Conflicts come from a local `known-names.json` that an update mode refreshes from each tool's docs.
+These are repo-scoped authoring helpers under `.agents/skills/`. The repo also
+symlinks `.claude` to `.agents`, so Claude resolves the same files via
+`.claude/skills/` without duplicating content.
+
+- **[check-skill-name](.agents/skills/check-skill-name/SKILL.md)** — Check a proposed skill name against reserved built-in commands and bundled skills from Claude Code, Codex, and Cursor (plus names already in this repo), and report CLEAR / CONFLICT / RISKY with non-conflicting alternatives. Conflicts come from a local `known-names.json` that an update mode refreshes from each tool's docs.
+- **[make-skill](.agents/skills/make-skill/SKILL.md)** — Create a new repo-native skill end-to-end: plan first, state assumptions, ask focused clarifying questions, validate the name with `check-skill-name`, then scaffold a convention-compliant `SKILL.md` and catalog entry.
 
 ## Agents
 
