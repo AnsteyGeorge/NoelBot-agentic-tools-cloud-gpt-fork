@@ -32,20 +32,14 @@ Do not require the user to paste a PR URL when the current branch can be used to
 
 ### 1. Identify the PR
 
-If the user provides a PR URL:
+Use the **`pr-info`** skill to resolve and verify the PR — invoke it via the Skill tool where
+supported, otherwise follow its workflow. It handles both a user-provided PR URL and
+current-branch discovery, returns `number,title,body,url,headRefName,baseRefName,state,isDraft`,
+and applies the standard gates (multiple PRs, branch mismatch, closed/merged). Do not
+re-implement PR discovery here.
 
-1. Use `gh` to read that PR directly.
-2. Confirm the PR is open unless the user explicitly asked to work on a closed PR.
-
-If the user does not provide a PR URL:
-
-1. Inspect the current git branch.
-2. Use `gh pr view --json number,title,body,url,headRefName,baseRefName,state,isDraft` from that branch when possible.
-3. If that does not return a PR, use `gh pr list --head <branch> --state open --json number,title,body,url,headRefName,baseRefName,state,isDraft`.
-4. Treat `origin` as the remote of record for PR discovery.
-5. If multiple PRs match the branch, stop and ask the user which PR to use.
-
-If no PR exists for the current branch:
+If `pr-info` reports that **no PR exists** for the current branch, create one (this skill's
+job, not `pr-info`'s):
 
 1. Default the draft PR base branch to `develop`.
 2. Analyze the branch diff against `develop`.
@@ -54,13 +48,6 @@ If no PR exists for the current branch:
      `proposal:`, `rfc:`, `test:`, `build:`, `ci:`, `cicd:`, `docs:`, `style:`, `fix:`, `perf:`, `refactor:`, `chore:`, `patch:`, `feat:`, `minor:`, `major:`, `breaking:`, or `hotfix:`
 4. Create a draft PR with `gh pr create --draft`.
 5. Continue the rest of the workflow against the newly created PR.
-
-Stop and ask the user before proceeding if:
-
-- The branch does not match the PR head branch.
-- The PR is closed and the user did not ask to reopen or update it anyway.
-- More than one open PR matches the branch.
-- The repository state makes it ambiguous which branch or PR should be used.
 
 ### 2. Read the current PR body and metadata
 

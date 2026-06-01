@@ -29,21 +29,16 @@ Do not require the user to paste a PR link when the branch can be used to discov
 
 ### 1. Discover the PR for the current branch
 
-1. Inspect the current git branch.
-2. Use `gh pr view --json number,headRefName,baseRefName,state,isDraft,url` from that branch when possible.
-3. If that does not return a PR, use `gh pr list --head <branch> --state open --json number,headRefName,baseRefName,state,isDraft,url`.
-4. If multiple PRs are returned for the same branch, stop and ask the user which one to use.
-5. Once a single PR is identified, compare the PR `headRefName` to the current branch.
+Use the **`pr-info`** skill to resolve and verify the PR for the current branch — invoke it
+via the Skill tool where supported, otherwise follow its workflow. It returns the PR
+`number`, `headRefName`, `baseRefName`, `state`, `isDraft`, and `url`, and applies the
+standard gates (no PR, multiple PRs, branch mismatch, closed/merged). Do not re-implement PR
+discovery here.
 
-Stop and ask the user before proceeding if:
+In addition, before making edits, stop and ask the user if the working tree has unrelated
+user changes that would make safe edits or commits ambiguous.
 
-- No PR exists for the current branch.
-- More than one open PR matches the current branch.
-- The current branch does not match the PR head branch.
-- The PR is closed.
-- The working tree has unrelated user changes that would make safe edits or commits ambiguous.
-
-If the PR matches, continue on that branch.
+If `pr-info` returns a single matching PR, continue on that branch.
 
 ### 2. Read all unresolved review threads
 
