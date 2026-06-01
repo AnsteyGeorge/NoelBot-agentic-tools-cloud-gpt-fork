@@ -1,0 +1,100 @@
+{
+  "_comment": "Reserved skill/command names that a new skill must not collide with. Seeded from each tool's official docs; refresh with check-skill-name's update mode. 'names' values are bare names (no leading slash), lowercased.",
+  "updated": "2026-06-01",
+  "sources": [
+    {
+      "id": "claude",
+      "label": "Claude Code",
+      "kind": "built-in commands + bundled skills",
+      "url": "https://code.claude.com/docs/en/commands"
+    },
+    {
+      "id": "codex",
+      "label": "Codex CLI",
+      "kind": "slash commands",
+      "url": "https://developers.openai.com/codex/cli/slash-commands"
+    },
+    {
+      "id": "cursor",
+      "label": "Cursor (CLI + chat)",
+      "kind": "built-in slash commands",
+      "url": "https://cursor.com/docs/cli/reference/slash-commands"
+    },
+    {
+      "id": "hermes",
+      "label": "Hermes Agent",
+      "kind": "built-in slash commands",
+      "url": "https://hermes-agent.nousresearch.com/docs/reference/slash-commands"
+    },
+    {
+      "id": "openclaw",
+      "label": "OpenClaw",
+      "kind": "built-in slash commands",
+      "url": "https://docs.openclaw.ai/tools/slash-commands"
+    }
+  ],
+  "names": {
+    "claude": [
+      "agents", "android", "app", "background", "batch", "bg", "branch", "btw",
+      "bug", "checkpoint", "chrome", "claude-api", "clear", "code-review",
+      "compact", "config", "context", "continue", "cost", "debug",
+      "deep-research", "desktop", "diff", "doctor", "effort", "exit",
+      "extra-usage", "feedback", "fewer-permission-prompts", "focus", "fork",
+      "heapdump", "help", "hooks", "ide", "init", "insights",
+      "install-github-app", "install-slack-app", "ios", "keybindings", "login",
+      "logout", "loop", "mcp", "memory", "mobile", "model", "new", "passes",
+      "permissions", "plan", "plugin", "powerup", "privacy-settings",
+      "proactive", "quit", "radio", "rc", "recap", "release-notes",
+      "reload-plugins", "reload-skills", "remote-control", "remote-env",
+      "reset", "resume", "review", "rewind", "routines", "run",
+      "run-skill-generator", "sandbox", "schedule", "scroll-speed",
+      "security-review", "settings", "setup-bedrock", "setup-vertex", "share",
+      "simplify", "skills", "stats", "status", "statusline", "stickers", "stop",
+      "tasks", "team-onboarding", "teleport", "terminal-setup", "theme", "tp",
+      "ultrareview", "undo", "upgrade", "usage", "usage-credits", "verify",
+      "vim", "web-setup", "workflows"
+    ],
+    "codex": [
+      "agent", "apps", "approvals", "approve", "btw", "clean", "clear",
+      "compact", "copy", "debug-config", "diff", "exit", "experimental", "fast",
+      "feedback", "fork", "goal", "hooks", "ide", "init", "keymap", "logout",
+      "mcp", "memories", "mention", "model", "new", "permissions", "personality",
+      "plan", "plugins", "ps", "quit", "raw", "resume", "review",
+      "sandbox-add-read-dir", "side", "skills", "status", "statusline", "stop",
+      "theme", "title", "vim"
+    ],
+    "cursor": [
+      "about", "ask", "auto-run", "commands", "compress", "copy-conversation-id",
+      "copy-request-id", "feedback", "help", "logout", "max-mode", "mcp",
+      "migrate-to-skills", "model", "models", "new-chat", "plan", "quit",
+      "resume", "rules", "sandbox", "setup-terminal", "summarize", "usage", "vim"
+    ],
+    "hermes": [
+      "agents", "background", "bg", "branch", "browser", "btw", "bundles", "busy",
+      "clear", "codex-runtime", "compress", "config", "copy", "cron", "curator",
+      "debug", "exit", "fast", "footer", "fork", "gateway", "goal", "gquota",
+      "handoff", "help", "history", "image", "indicator", "insights", "kanban",
+      "model", "new", "paste", "personality", "platform", "platforms", "plugins",
+      "profile", "q", "quit", "queue", "reasoning", "redraw", "reload",
+      "reload-mcp", "reload-skills", "reload_mcp", "reload_skills", "reset",
+      "resume", "rollback", "save", "sb", "sessions", "skin", "skills", "snap",
+      "snapshot", "status", "statusbar", "steer", "stop", "subgoal", "switch",
+      "tasks", "title", "tools", "toolsets", "undo", "usage", "verbose", "voice",
+      "yolo"
+    ],
+    "openclaw": [
+      "acp", "activation", "agents", "allowlist", "approve", "bash", "bot-help",
+      "bot-logs", "bot-ping", "bot-upgrade", "bot-version", "btw", "card",
+      "codex", "commands", "compact", "config", "context", "crestodian", "debug",
+      "diagnostics", "dock-discord", "dock-mattermost", "dock-slack",
+      "dock-telegram", "dock_discord", "dock_mattermost", "dock_slack",
+      "dock_telegram", "dreaming", "elev", "elevated", "exec", "export",
+      "export-session", "export-trajectory", "fast", "focus", "help", "id", "mcp",
+      "model", "models", "new", "pair", "phone", "plugin", "plugins", "q", "queue",
+      "reason", "reasoning", "reset", "restart", "send", "session", "side", "skill",
+      "status", "steer", "stop", "subagents", "t", "tasks", "tell", "think",
+      "thinking", "tools", "trace", "trajectory", "tts", "unfocus", "usage",
+      "v", "verbose", "voice", "whoami"
+    ]
+  }
+}

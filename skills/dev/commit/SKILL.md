@@ -13,7 +13,7 @@ Always inspect the actual diff before committing. Match the repository's existin
 
 Keep `CLAUDE.md` and `AGENTS.md` as mandatory policy sources. If this skill conflicts with them, follow those files.
 
-By default this stages and commits only. It does not push unless the user asks.
+By default this stages, commits, and pushes to `origin`. If the current branch does not exist on `origin` yet, create it during push and set upstream tracking. Skip pushing only if the user asks.
 
 ## Required Inputs
 
@@ -23,7 +23,7 @@ Gather or infer:
 2. Scope: all current changes, or specific paths.
 3. Whether the changes form one logical commit or several.
 4. The commit message — use the user's wording if given, otherwise infer it from the diff.
-5. Whether to push afterward (default: no).
+5. Whether to push afterward (default: yes, to `origin`).
 
 ## Workflow
 
@@ -62,14 +62,16 @@ Gather or infer:
 ### 6. Commit
 
 - Create each planned commit. For multiple commits, repeat staging + message per group.
+- Push to `origin` by default after committing.
+- If the branch is missing on `origin`, create it on first push and set upstream (for example, `git push -u origin <branch>`).
 
 ### 7. Report
 
-- Show the commit(s) created. Push only if the user requested it.
+- Show the commit(s) created. Push to `origin` unless the user requested otherwise.
 
 ## Implementation Notes
 
-- Useful commands: `git status --porcelain`, `git diff`, `git diff --staged`, `git add -p`, `git add <pathspec>`, `git commit`, `git log --oneline`.
+- Useful commands: `git status --porcelain`, `git diff`, `git diff --staged`, `git add -p`, `git add <pathspec>`, `git commit`, `git log --oneline`, `git push`, `git push -u origin <branch>`.
 - Detect a protected base from the repo default branch (`git remote show origin`, or `gh repo view --json defaultBranchRef`) or a `develop` convention.
 - Before staging, scan the diff for secrets, credentials, `.env` values, and large or binary artifacts.
 
@@ -80,7 +82,7 @@ Gather or infer:
 - Never amend or rewrite already-pushed commits unless the user asks.
 - Confirm before committing on `main`, `develop`, or another protected base.
 - Do not bypass failing hooks with `--no-verify` unless explicitly told.
-- Do not push unless the user asks.
+- Push to `origin` by default; skip push only if the user asks.
 - If unexpected or unrelated changes appear, stop and ask the user how to proceed.
 
 ## Output Style

@@ -42,11 +42,13 @@ and invisible to the harness.
 
 Every skill follows the same shape. Match it exactly when adding or editing one.
 
-**Frontmatter** — YAML with two keys:
+**Frontmatter** — YAML with four keys:
 
 ```yaml
 name: skill-name
 description: One paragraph describing what the skill does, the concrete steps it covers, and a "Use when ..." trigger sentence.
+user-invocable: true
+disable-model-invocation: false
 ```
 
 - `name` is lowercase, hyphenated, and **must** match the skill's directory
@@ -54,6 +56,10 @@ description: One paragraph describing what the skill does, the concrete steps it
   confusing link.
 - `description` is third person, names the major steps the skill performs, and
   ends with a sentence starting with "Use when ...".
+- `user-invocable` controls whether users can call the skill directly. Default
+  is `true`.
+- `disable-model-invocation` controls whether the model can auto-invoke the
+  skill from context. Default is `false`.
 
 **Body** — these sections, in order:
 
