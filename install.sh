@@ -1,44 +1,3 @@
-# INSTALL
-
-A one-time setup prompt to register every tool in this repo with each AI coding
-agent installed on the machine.
-
-Tools are **linked, not copied** — editing a `SKILL.md` or an agent profile here
-updates it in every harness at once. Re-run whenever you add a new tool or set up
-a new machine; the script is idempotent.
-
-This repo ships two kinds of tool:
-
-- **Skills** (`skills/<category>/<name>/SKILL.md`) — portable across harnesses
-  (agentskills.io standard). Installed into every detected harness.
-- **Agent profiles** (`agents/[<group>/]<name>.md`) — Claude Code subagents.
-  Installed only into harnesses that support them (Claude today).
-
-## Prompt
-
-> Register every tool in this repository with all AI coding agents installed on
-> this machine.
->
-> 1. Treat each directory under `skills/` containing a `SKILL.md` as one skill,
->    and each `*.md` file under `agents/` as one agent profile. The link name is
->    the tool's `name:` frontmatter (fall back to the directory/file basename).
-> 2. Detect which harnesses are present — by home directory or by binary on
->    `PATH` — and which artifact types each one supports. This is data-driven:
->    each harness declares a map of `type:destination` pairs.
-> 3. For each present harness, symlink every supported tool into the matching
->    destination: skills as directory symlinks, agent profiles as file symlinks
->    named `<name>.md`.
-> 4. Be idempotent: skip links that are already correct, repoint links that
->    point elsewhere, and never clobber a real (non-symlink) file — report it as
->    a conflict and leave it untouched.
->
-> Run the script below, or do exactly what it describes.
-
-## Script
-
-Run this from anywhere inside the repo.
-
-```bash
 #!/usr/bin/env bash
 set -euo pipefail
 
@@ -120,4 +79,3 @@ for entry in "${HARNESSES[@]}"; do
     done < <($collector)
   done
 done
-```
