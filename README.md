@@ -51,6 +51,12 @@ the source of truth.
 | [`pr-rebase`](skills/pull-requests/pr-rebase/SKILL.md) | Rebase the current branch onto the latest `origin/develop`, resolve conflicts using branch intent and the PR description, then force-push with lease. |
 | [`pr-restack`](skills/pull-requests/pr-restack/SKILL.md) | Re-align a stack of dependent branches/PRs after upstream branches drift, rebase, force-push, or merge - re-pointing each downstream branch at its correct base while preserving its own commits. |
 
+### Issues
+
+| Skill | Description |
+| --- | --- |
+| [`issue-create`](skills/issues/issue-create/SKILL.md) | Create a GitHub issue from provided context, apply optional metadata. |
+
 ### Code quality
 
 | Skill | Description |
