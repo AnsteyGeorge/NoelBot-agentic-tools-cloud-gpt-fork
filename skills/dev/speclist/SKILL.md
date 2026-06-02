@@ -11,7 +11,7 @@ disable-model-invocation: false
 
 Use this skill when the user has a report (audit notes, bug analysis, review findings, postmortem, or discovery write-up) and wants an implementation-spec checklist they can execute.
 
-Default scope: convert one report into one implementation checklist for a single codebase/workstream, preserving intent while making actions concrete and verifiable.
+Default scope: convert one report into one implementation checklist for a single codebase/workstream, preserving intent while making actions concrete and verifiable, then write it to a markdown plan file.
 
 Treat `CLAUDE.md` / `AGENTS.md` in the target repository as the source of truth. If they conflict with this skill, follow them.
 
@@ -24,6 +24,7 @@ Gather or infer:
 3. Expected output depth (high-level phases vs file-level task list).
 4. Constraints (timeline, release window, risk tolerance, tooling/process rules).
 5. Definition of done (tests, rollout, docs, approvals, monitoring, backout).
+6. Preferred output file path if explicitly provided by the user.
 
 If the report is missing or too vague to extract actions, stop and ask for a clearer source before proceeding.
 
@@ -62,6 +63,9 @@ If the report is missing or too vague to extract actions, stop and ask for a cle
    - Confirm no required report finding was dropped; note intentionally excluded items with reason.
 
 6. **Deliver**
+   - Write the final implementation-spec checklist to a markdown file (`.md`), using a user-provided path when available.
+   - If no path is specified, create a reasonable temporary plan filename in the repository (for example, `tmp-speclist-<topic>.md`).
+   - Treat the generated plan file as temporary working state unless the user explicitly says it should be durable or checked in.
    - Output the final implementation-spec checklist in the style requested by the user (markdown checklist by default).
    - Keep it concise but execution-ready.
 
@@ -69,6 +73,7 @@ If the report is missing or too vague to extract actions, stop and ask for a cle
 
 - Prefer reading the report source directly from files/issues/PR context before drafting.
 - Use short section headers and markdown checkboxes (`- [ ]`) for default output.
+- Default output destination is a markdown plan file, not chat-only prose.
 - For codebase-bound plans, include concrete path/symbol hints when known (for example, `src/auth/`, `PaymentService`).
 - If the user asks for tickets, split checklist items into independently shippable slices with clear dependencies.
 
@@ -85,7 +90,8 @@ If the report is missing or too vague to extract actions, stop and ask for a cle
 When finishing, provide:
 
 1. A one-line objective.
-2. An ordered implementation checklist with verifiable items.
-3. An "Open Questions" section (blocking first).
-4. A "Risk Controls" section (risk -> mitigation -> signal).
-5. A short "Out of Scope" section for deferred items.
+2. The markdown plan filepath written (and whether it is treated as temporary).
+3. An ordered implementation checklist with verifiable items.
+4. An "Open Questions" section (blocking first).
+5. A "Risk Controls" section (risk -> mitigation -> signal).
+6. A short "Out of Scope" section for deferred items.
