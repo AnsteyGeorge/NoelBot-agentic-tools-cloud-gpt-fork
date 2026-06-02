@@ -31,6 +31,7 @@ Everyday local version-control workflows — no PR or `gh` required.
 | Skill | Description |
 | --- | --- |
 | [`changes`](skills/dev/changes/SKILL.md) | Inspect the current staged and unstaged changes and summarize them as logical groupings, using the branch history for context and flagging anything unrelated, incidental, or problematic. Read-only; hands off to `commit` when you're ready. |
+| [`build`](skills/dev/build/SKILL.md) | Implement a scoped change from provided context, a plan, or a speclist: turn input into concrete tasks, apply code changes, validate, and report assumptions, outcomes, and follow-ups. |
 | [`commit`](skills/dev/commit/SKILL.md) | Turn the current working-tree changes into well-formed commit(s): review the diff, group related changes, write a message in the repo's convention, run pre-commit hooks. Does not push unless asked. |
 | [`rebase`](skills/dev/rebase/SKILL.md) | Rebase the current branch onto the latest base (`main` or `develop`): fetch, rebase, hand off to `conflicts` automatically on conflict, then `--force-with-lease`. The PR-agnostic sibling of `pr-rebase`. |
 | [`conflicts`](skills/dev/conflicts/SKILL.md) | Resolve an in-progress merge/rebase/cherry-pick/revert conflict state using branch intent, then continue the operation to completion. Auto-triggered by `rebase`. |
