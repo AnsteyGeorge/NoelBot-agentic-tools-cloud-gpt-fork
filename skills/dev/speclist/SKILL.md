@@ -65,7 +65,7 @@ If the report is missing or too vague to extract actions, stop and ask for a cle
    - Output the final implementation-spec checklist in the style requested by the user (markdown checklist by default).
    - Keep it concise but execution-ready.
 
-## Cursor Implementation Notes
+## Implementation Notes
 
 - Prefer reading the report source directly from files/issues/PR context before drafting.
 - Use short section headers and markdown checkboxes (`- [ ]`) for default output.

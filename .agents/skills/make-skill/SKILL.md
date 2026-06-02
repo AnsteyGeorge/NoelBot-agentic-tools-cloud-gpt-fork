@@ -70,7 +70,7 @@ If critical context is missing, proceed with clearly labeled assumptions and ask
    - Verify required sections and policy compliance.
    - Report final outputs and include a short "Assumed vs Confirmed" summary.
 
-## Cursor Implementation Notes
+## Implementation Notes
 
 - For name validation, invoke `.agents/skills/check-skill-name/SKILL.md` workflow rather than ad-hoc checks.
 - Favor defaults for low-impact details to keep momentum; ask questions only where answers change the final skill behavior.

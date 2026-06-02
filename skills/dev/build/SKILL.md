@@ -61,7 +61,7 @@ If no actionable implementation target can be extracted, stop and ask for cleare
    - List assumptions, residual risks, and optional next steps.
    - If commit/PR actions were requested, hand off to the appropriate workflow and include verification status.
 
-## Cursor Implementation Notes
+## Implementation Notes
 
 - Prefer direct file/tool evidence over speculation; read before editing.
 - Use `rg`/`Glob` to find symbols and paths quickly, then `ReadFile` for context.
