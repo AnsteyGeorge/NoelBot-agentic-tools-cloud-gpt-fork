@@ -9,7 +9,7 @@ disable-model-invocation: true
 
 ## Core Contract
 
-Use this skill to create a new skill in this repository, under either `skills/<category>/<name>/SKILL.md` (global) or `.agents/skills/<name>/SKILL.md` (repo-local helper).
+Use this skill to create a new skill in this repository, defaulting to `skills/<category>/<name>/SKILL.md` (global). Use `.agents/skills/<name>/SKILL.md` only when the user explicitly asks for a repo-local helper.
 
 Default scope: one new skill at a time, including a compliant `SKILL.md` and a `README.md` catalog entry.
 
@@ -27,7 +27,7 @@ Gather or infer:
 4. Any required tools, constraints, and safety rules.
 5. Desired output style and verification/reporting expectations.
 
-If critical context is missing, proceed with clearly labeled assumptions and then confirm via clarifying questions before creating files.
+If critical context is missing, proceed with clearly labeled assumptions and ask only clarifying questions that materially affect behavior, tooling, or safety.
 
 ## Workflow
 
@@ -37,15 +37,14 @@ If critical context is missing, proceed with clearly labeled assumptions and the
    - Stop-and-ask gate: if the request spans multiple unrelated skills, ask whether to split the work.
 
 2. **State assumptions**
-   - List assumptions explicitly (target location, category if applicable, invocation defaults, expected level of strictness, output style, and scope boundaries).
+   - List assumptions explicitly (target location defaults to global unless explicitly requested otherwise, category if applicable, invocation defaults, expected level of strictness, output style, and scope boundaries).
    - Mark each assumption as either "safe default" or "needs confirmation."
 
 3. **Run clarifying-question loop**
    - Ask only high-impact questions first, in sequence, not as a large batch.
    - Confirm in/out-of-scope behavior, mandatory tooling, and non-negotiable safety constraints.
-   - Explicitly confirm the target location when unclear:
-     - `skills/` for repo/content-agnostic global skills.
-     - `.agents/skills/` for repo-opinionated local helpers following this repo's `AGENTS.md`.
+   - Do not ask to confirm target location by default; assume `skills/` for repo/content-agnostic global skills.
+   - Use `.agents/skills/` only when the user directly requests a repo-opinionated local helper following this repo's `AGENTS.md`.
    - Stop-and-ask gate: if answers materially change behavior, revise assumptions and re-confirm.
 
 4. **Derive and validate the skill name**
@@ -82,7 +81,8 @@ If critical context is missing, proceed with clearly labeled assumptions and the
 
 - Never scaffold files before the skill name is `CLEAR` via `check-skill-name`.
 - Never hide assumptions; always label them and confirm high-impact ones.
-- Never skip clarifying questions when ambiguity affects behavior, tooling, or safety.
+- Never ask location-clarification by default; assume global unless the user directly requests repo-local.
+- Never skip clarifying questions when ambiguity affects behavior, tooling, or safety (excluding default location).
 - Never violate required repository conventions for frontmatter and section ordering.
 - Never silently broaden scope beyond one requested skill without user approval.
 
